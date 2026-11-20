@@ -1,0 +1,77 @@
+{% extends "core/base.html" %}
+
+{% block title %}Dashboard · CyberHub{% endblock %}
+
+{% block content %}
+  {# ---- Row 1: welcome banner + stat tiles ---- #}
+  <div class="row g-4 mb-4">
+    <div class="col-lg-8 col-xl-9">
+      <section class="ch-panel ch-hero h-100">
+        <svg class="ch-hero-art" viewBox="0 0 260 240" fill="none" stroke="currentColor"
+             stroke-width="1.2" aria-hidden="true">
+          <path d="M150 10 L250 90 L180 120 Z M180 120 L250 90 L240 200 Z
+                   M180 120 L240 200 L120 230 Z M120 230 L180 120 L60 170 Z
+                   M60 170 L180 120 L150 10 Z M60 170 L20 235 L120 230"/>
+        </svg>
+        <h1>Welcome{% if user.is_authenticated %} {{ user.username }}{% else %} to CyberHub{% endif %}</h1>
+        <p class="text-body-secondary mb-0 col-md-8">
+          Your study hub for the Cybersecurity + AI course: notes, quizzes,
+          commands and a local AI mentor in one place.
+        </p>
+      </section>
+    </div>
+
+    <div class="col-lg-4 col-xl-3 d-flex flex-column gap-3">
+      {% for stat in stats %}
+        <div class="ch-panel ch-stat flex-fill">
+          <div class="ch-stat-icon"><i class="fa-solid {{ stat.icon }}"></i></div>
+          <div>
+            <div class="fs-5 fw-bold">{{ stat.value|default_if_none:"—" }}</div>
+            <div class="small text-body-secondary">{{ stat.label }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ---- Row 2: progress rings ---- #}
+  <div class="row g-4 mb-5">
+    {% for ring in progress %}
+      <div class="col-md-4">
+        <div class="ch-panel d-flex align-items-center gap-4 p-4 h-100">
+          <div class="ch-ring" style="--value: {{ ring.percent|default_if_none:0 }}">
+            <span>{% if ring.percent is None %}—{% else %}{{ ring.percent }}%{% endif %}</span>
+          </div>
+          <div>
+            <div class="fs-5 fw-semibold">{{ ring.label }}</div>
+            {% if ring.percent is None %}
+              <div class="small text-body-secondary">Tracked by PTM · coming soon</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# ---- Row 3: component cards ---- #}
+  <h2 class="h5 mb-3">Components</h2>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    {% for component in components %}
+      <div class="col">
+        <article class="ch-panel ch-card">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="ch-tile {{ component.tile }}"><i class="fa-solid {{ component.icon }}"></i></div>
+            {% if component.url_name %}
+              <a href="{% url component.url_name %}" class="btn btn-accent btn-sm">Open</a>
+            {% else %}
+              <span class="ch-badge">Coming soon</span>
+            {% endif %}
+          </div>
+          <h3 class="h5 fw-bold">{{ component.name }}</h3>
+          <p>{{ component.description }}</p>
+          <div class="mt-auto small"><strong>Code:</strong> <span class="ch-accent">{{ component.code }}</span></div>
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
