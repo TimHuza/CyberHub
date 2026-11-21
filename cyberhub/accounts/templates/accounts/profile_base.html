@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+
+{# Shared by the Profile tabs. Replacing the layout block removes the sidebar and top bar. #}
+{% block layout %}
+<div class="d-flex flex-column flex-lg-row min-vh-100">
+  <div class="col-lg-2 p-4">
+    <a class="btn btn-link link-light p-0 fs-4 mb-4" href="{% url 'core:home' %}" aria-label="Back to Dashboard"><i class="fa-solid fa-arrow-left"></i></a>
+    <nav aria-label="Profile">
+      <a class="ch-nav-link {% if request.resolver_match.view_name == 'accounts:profile' %}active{% endif %}" href="{% url 'accounts:profile' %}" {% if request.resolver_match.view_name == 'accounts:profile' %}aria-current="page"{% endif %}><i class="fa-solid fa-user"></i> Profile</a>
+      <a class="ch-nav-link {% if request.resolver_match.view_name == 'accounts:profile_password' %}active{% endif %}" href="{% url 'accounts:profile_password' %}" {% if request.resolver_match.view_name == 'accounts:profile_password' %}aria-current="page"{% endif %}><i class="fa-solid fa-key"></i> CyberHub Password</a>
+    </nav>
+  </div>
+
+  <div class="vr d-none d-lg-block"></div>
+
+  <main class="flex-grow-1 p-4">
+    {% block profile_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}
+
+{% block search_scripts %}{% endblock %}

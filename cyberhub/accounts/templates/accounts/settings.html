@@ -1,0 +1,78 @@
+{% extends "core/base.html" %}
+
+{% block title %}Settings · CyberHub{% endblock %}
+
+{# Replacing the whole layout block removes the sidebar and top bar on this page. #}
+{% block layout %}
+<div class="d-flex flex-column flex-lg-row min-vh-100">
+  <div class="col-lg-2 p-4">
+    <a class="btn btn-link link-light p-0 fs-4 mb-4" href="{% url 'core:home' %}" aria-label="Back to Dashboard"><i class="fa-solid fa-arrow-left"></i></a>
+    {# Only one tab for now. More settings tabs can be added to this nav later. #}
+    <nav aria-label="Settings">
+      <a class="ch-nav-link active" href="{% url 'accounts:settings' %}" aria-current="page"><i class="fa-solid fa-palette"></i> Appearance</a>
+    </nav>
+  </div>
+
+  <div class="vr d-none d-lg-block"></div>
+
+  <main class="flex-grow-1 p-4">
+    <div class="mx-auto" style="max-width: 460px;">
+      <h1 class="h3 mb-1">Appearance</h1>
+      <p class="text-body-secondary mb-3">Choose the colors and fonts you see in the app</p>
+
+      {# Visual only for now: there is no form, so nothing is sent to the server or saved. #}
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 py-2">
+        <div>
+          <div id="color-mode-label" class="fw-semibold">Color mode</div>
+          <div class="small text-body-secondary">Use light or dark colors</div>
+        </div>
+        <div class="d-flex gap-2" role="radiogroup" aria-labelledby="color-mode-label">
+          <input class="btn-check" type="radio" name="color_mode" id="color-mode-light" value="light" autocomplete="off">
+          <label class="btn btn-outline-secondary p-1 lh-1" for="color-mode-light">
+            <span class="visually-hidden">Light</span>
+            <svg width="72" height="48" viewBox="0 0 96 64" aria-hidden="true">
+              <rect width="96" height="64" rx="6" fill="#f1f1f3"/>
+              <circle cx="10" cy="10" r="3" fill="#c4c4c9"/>
+              <rect x="20" y="6" width="70" height="52" rx="3" fill="#ffffff"/>
+              <rect x="56" y="12" width="28" height="2.5" rx="1.25" fill="#3b8bf6"/>
+              <rect x="26" y="20" width="30" height="2" rx="1" fill="#c9c9ce"/>
+              <rect x="26" y="26" width="22" height="2" rx="1" fill="#c9c9ce"/>
+              <rect x="52" y="36" width="32" height="2.5" rx="1.25" fill="#3b8bf6"/>
+              <rect x="62" y="42" width="22" height="2.5" rx="1.25" fill="#3b8bf6"/>
+              <circle cx="82" cy="51" r="2.5" fill="#3b8bf6"/>
+            </svg>
+          </label>
+          <input class="btn-check" type="radio" name="color_mode" id="color-mode-dark" value="dark" autocomplete="off" checked>
+          <label class="btn btn-outline-secondary p-1 lh-1" for="color-mode-dark">
+            <span class="visually-hidden">Dark</span>
+            <svg width="72" height="48" viewBox="0 0 96 64" aria-hidden="true">
+              <rect width="96" height="64" rx="6" fill="#2b2b2f"/>
+              <circle cx="10" cy="10" r="3" fill="#6b6b72"/>
+              <rect x="20" y="6" width="70" height="52" rx="3" fill="#18181b"/>
+              <rect x="56" y="12" width="28" height="2.5" rx="1.25" fill="#3b8bf6"/>
+              <rect x="26" y="20" width="30" height="2" rx="1" fill="#6b6b72"/>
+              <rect x="26" y="26" width="22" height="2" rx="1" fill="#6b6b72"/>
+              <rect x="52" y="34" width="32" height="2.5" rx="1.25" fill="#3b8bf6"/>
+              <rect x="25" y="45" width="60" height="9" rx="4.5" fill="none" stroke="#6b6b72"/>
+              <circle cx="80" cy="49.5" r="2.5" fill="#3b8bf6"/>
+            </svg>
+          </label>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 py-2">
+        <div>
+          <label class="fw-semibold d-block" for="font-size">UI font size</label>
+          <div class="small text-body-secondary">Adjust the base size used</div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <input class="form-control form-control-sm" style="width: 72px;" type="number" id="font-size" name="font_size" value="14" min="12" max="20" step="1" autocomplete="off">
+          <span class="text-body-secondary">px</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block search_scripts %}{% endblock %}

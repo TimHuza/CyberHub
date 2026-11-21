@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="{% static 'core/css/cyberhub.css' %}">
 </head>
 <body>
+  {# Sign up and log in replace this whole block, so they show no sidebar or top bar. #}
+  {% block layout %}
   <div class="ch-layout">
 
     {# Sidebar: always visible on large screens, slide-in menu on small ones. #}
@@ -59,11 +61,29 @@
         </form>
 
         <div class="ms-auto d-flex align-items-center gap-2">
-          <span class="ch-pill">
-            <span class="ch-dot"></span>
-            {% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}
-          </span>
           <button class="btn btn-accent" type="button" disabled>Ask AIM</button>
+          {% if user.is_authenticated %}
+            <span class="ch-topbar-divider" aria-hidden="true"></span>
+            <div class="dropdown">
+              {# One button holds the icon and name, so clicking either opens the menu. #}
+              <button class="ch-user dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Account menu for {{ user.username }}">
+                <i class="fa-regular fa-circle-user"></i>
+                <span class="d-none d-sm-inline">{{ user.username }}</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end ch-user-menu">
+                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'accounts:settings' %}">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  {# Logout must be a POST form (with CSRF), so a link on another site can't log you out. #}
+                  <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+                    {% csrf_token %}
+                    <button class="dropdown-item" type="submit">Sign Out</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          {% endif %}
         </div>
       </header>
 
@@ -72,9 +92,12 @@
       </main>
     </div>
   </div>
+  {% endblock %}
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  {% block search_scripts %}
   {{ components|json_script:"ch-components" }}
   <script src="{% static 'core/js/search.js' %}"></script>
+  {% endblock %}
 </body>
 </html>

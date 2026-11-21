@@ -382,7 +382,7 @@ Only via `notes/services.py`: `list_folders(user)`, `get_notes(user, folder_ids,
 
 | Area | Practice |
 |---|---|
-| Authentication | Django built-in login; **no public sign-up** — account via `createsuperuser` |
+| Authentication | Django built-in login; **open sign-up while localhost-only** (owner decision, 2026-11-20). Must be disabled or protected (e.g. invite code) before CyberHub is reachable from any network — Phase 9 requirement |
 | Authorization | `@login_required` everywhere; `get_object_or_404(Model, pk=…, user=request.user)`; tests prove other users get 404 |
 | CSRF | Token on every form and JS POST; never `@csrf_exempt` |
 | Markdown / XSS | `nh3` allowlist; strip `<script>`, `<iframe>`, `on*=`, `javascript:`; never `|safe` unsanitized content, including AI output |
@@ -428,7 +428,7 @@ Only via `notes/services.py`: `list_folders(user)`, `get_notes(user, folder_ids,
 | **6. AIM knowledge** | Attach notes/folders, upload PDFs/transcripts, extraction, `/ptm` | AIM, NTT, PTM | Uploads, PDF parsing, context budgeting, prompt-injection defence | AIM answers from notes; `/ptm` works |
 | **7. PTM insights** | Per-topic accuracy, weak topics, progress over time, charts | PTM | Analytical queries, visualization | — |
 | **8. RAG (if needed)** | Chunking, embeddings, similarity search | AIM | Embeddings, vector search | Large folders answered well |
-| **9. Production-ready** | PostgreSQL, Docker, CI, backups, hardening, note images, export | all | DevOps, containers, CI/CD | `check --deploy` clean |
+| **9. Production-ready** | PostgreSQL, Docker, CI, backups, hardening, **disable or protect open sign-up**, note images, export | all | DevOps, containers, CI/CD | `check --deploy` clean |
 
 **MVP = Phases 0 + 1:** a secure, login-protected Markdown notebook. NTT comes first because it needs no AI, teaches core Django, and builds up the notes that QEF and AIM will later need.
 

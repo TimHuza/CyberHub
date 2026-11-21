@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+
+{% block title %}Log in · CyberHub{% endblock %}
+
+{% block layout %}
+<main class="min-vh-100 d-flex align-items-center justify-content-center p-3">
+  <div class="ch-panel p-4 w-100" style="max-width: 400px;">
+    <div class="ch-brand text-center mb-3">CyberHub</div>
+    <h1 class="h4 text-center mb-4">Log in</h1>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger" role="alert">Wrong username or password.</div>
+    {% endif %}
+
+    <form method="post" action="{% url 'accounts:login' %}" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+        <input class="form-control" type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}" autocomplete="username" autofocus required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+        <input class="form-control" type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}" autocomplete="current-password" required>
+      </div>
+      {# "next" sends you back to the page you originally asked for. #}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn btn-accent w-100" type="submit">Log in</button>
+    </form>
+
+    <p class="text-center text-secondary mt-3 mb-0">Don't have an <a class="link-primary" href="{% url 'accounts:signup' %}">account</a>?</p>
+  </div>
+</main>
+{% endblock %}
+
+{% block search_scripts %}{% endblock %}

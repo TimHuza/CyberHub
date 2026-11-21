@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Each component on the dashboard. When a component is built, set
@@ -30,6 +31,7 @@ PROGRESS = [
 ]
 
 
+@login_required
 def home(request):
     """Dashboard: welcome banner, PTM stats (placeholders for now), component cards."""
     context = {"stats": STATS, "progress": PROGRESS}
