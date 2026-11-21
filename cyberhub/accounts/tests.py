@@ -146,7 +146,7 @@ class SettingsPageTests(TestCase):
         self.assertContains(response, 'id="color-mode-light"')
         self.assertContains(response, 'id="color-mode-dark"')
         self.assertContains(response, 'id="font-size"')
-        self.assertContains(response, 'value="14"')
+        self.assertContains(response, 'value="16" min="12" max="24"')
 
     def test_page_hides_sidebar_and_search(self):
         self.client.force_login(self.user)
@@ -164,6 +164,93 @@ class SettingsPageTests(TestCase):
         response = self.client.get(reverse("core:home"))
 
         self.assertContains(response, f'<a class="dropdown-item" href="{reverse("accounts:settings")}">Settings</a>')
+
+    def test_color_mode_defaults_to_dark(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("accounts:settings"))
+
+        self.assertEqual(self.user.color_mode, User.ColorMode.DARK)
+        self.assertContains(response, 'data-bs-theme="dark"')
+
+    def test_logged_out_pages_use_dark(self):
+        response = self.client.get(reverse("accounts:login"))
+
+        self.assertContains(response, 'data-bs-theme="dark"')
+
+    def test_saving_light_mode_applies_it(self):
+        self.client.force_login(self.user)
+        url = reverse("accounts:settings")
+
+        response = self.client.post(url, {"color_mode": "light", "font_size": 16}, follow=True)
+
+        self.assertRedirects(response, url)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.color_mode, User.ColorMode.LIGHT)
+        self.assertContains(response, 'data-bs-theme="light"')
+        self.assertContains(response, 'value="light" autocomplete="off" checked')
+
+    def test_switching_back_to_dark_is_saved(self):
+        self.user.color_mode = User.ColorMode.LIGHT
+        self.user.save()
+        self.client.force_login(self.user)
+
+        self.client.post(reverse("accounts:settings"), {"color_mode": "dark", "font_size": 16})
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.color_mode, User.ColorMode.DARK)
+
+    def test_invalid_color_mode_is_ignored(self):
+        self.client.force_login(self.user)
+
+        self.client.post(reverse("accounts:settings"), {"color_mode": "purple", "font_size": 16})
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.color_mode, User.ColorMode.DARK)
+
+    def test_anonymous_user_cannot_save_color_mode(self):
+        url = reverse("accounts:settings")
+
+        response = self.client.post(url, {"color_mode": "light"})
+
+        self.assertRedirects(response, f'{reverse("accounts:signup")}?next={url}')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.color_mode, User.ColorMode.DARK)
+
+    def test_font_size_defaults_to_16(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(self.user.font_size, 16)
+        self.assertContains(response, 'style="font-size: 16px;"')
+
+    def test_logged_out_pages_use_default_font_size(self):
+        response = self.client.get(reverse("accounts:login"))
+
+        self.assertContains(response, 'style="font-size: 16px;"')
+
+    def test_font_size_limits_can_be_saved(self):
+        self.client.force_login(self.user)
+
+        for size in (12, 24):
+            with self.subTest(size=size):
+                response = self.client.post(reverse("accounts:settings"), {"color_mode": "dark", "font_size": size}, follow=True)
+
+                self.user.refresh_from_db()
+                self.assertEqual(self.user.font_size, size)
+                self.assertContains(response, f'style="font-size: {size}px;"')
+
+    def test_invalid_font_size_is_ignored(self):
+        self.client.force_login(self.user)
+
+        for size in ("11", "25", "abc", "", "16px;color:red"):
+            with self.subTest(size=size):
+                self.client.post(reverse("accounts:settings"), {"color_mode": "light", "font_size": size})
+
+                self.user.refresh_from_db()
+                self.assertEqual(self.user.font_size, 16)
+                self.assertEqual(self.user.color_mode, User.ColorMode.DARK)
 
 
 class ProfilePageTests(TestCase):

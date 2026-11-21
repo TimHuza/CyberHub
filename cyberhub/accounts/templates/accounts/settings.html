@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Settings · CyberHub{% endblock %}
 
@@ -6,7 +7,7 @@
 {% block layout %}
 <div class="d-flex flex-column flex-lg-row min-vh-100">
   <div class="col-lg-2 p-4">
-    <a class="btn btn-link link-light p-0 fs-4 mb-4" href="{% url 'core:home' %}" aria-label="Back to Dashboard"><i class="fa-solid fa-arrow-left"></i></a>
+    <a class="btn btn-link link-body-emphasis p-0 fs-4 mb-4" href="{% url 'core:home' %}" aria-label="Back to Dashboard"><i class="fa-solid fa-arrow-left"></i></a>
     {# Only one tab for now. More settings tabs can be added to this nav later. #}
     <nav aria-label="Settings">
       <a class="ch-nav-link active" href="{% url 'accounts:settings' %}" aria-current="page"><i class="fa-solid fa-palette"></i> Appearance</a>
@@ -20,14 +21,16 @@
       <h1 class="h3 mb-1">Appearance</h1>
       <p class="text-body-secondary mb-3">Choose the colors and fonts you see in the app</p>
 
-      {# Visual only for now: there is no form, so nothing is sent to the server or saved. #}
+      {# settings.js saves this form when a color mode is clicked or the font size stops changing. #}
+      <form id="appearance-form" method="post" action="{% url 'accounts:settings' %}">
+        {% csrf_token %}
       <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 py-2">
         <div>
           <div id="color-mode-label" class="fw-semibold">Color mode</div>
           <div class="small text-body-secondary">Use light or dark colors</div>
         </div>
         <div class="d-flex gap-2" role="radiogroup" aria-labelledby="color-mode-label">
-          <input class="btn-check" type="radio" name="color_mode" id="color-mode-light" value="light" autocomplete="off">
+          <input class="btn-check" type="radio" name="color_mode" id="color-mode-light" value="light" autocomplete="off" {% if user.color_mode == "light" %}checked{% endif %}>
           <label class="btn btn-outline-secondary p-1 lh-1" for="color-mode-light">
             <span class="visually-hidden">Light</span>
             <svg width="72" height="48" viewBox="0 0 96 64" aria-hidden="true">
@@ -42,7 +45,7 @@
               <circle cx="82" cy="51" r="2.5" fill="#3b8bf6"/>
             </svg>
           </label>
-          <input class="btn-check" type="radio" name="color_mode" id="color-mode-dark" value="dark" autocomplete="off" checked>
+          <input class="btn-check" type="radio" name="color_mode" id="color-mode-dark" value="dark" autocomplete="off" {% if user.color_mode == "dark" %}checked{% endif %}>
           <label class="btn btn-outline-secondary p-1 lh-1" for="color-mode-dark">
             <span class="visually-hidden">Dark</span>
             <svg width="72" height="48" viewBox="0 0 96 64" aria-hidden="true">
@@ -66,13 +69,14 @@
           <div class="small text-body-secondary">Adjust the base size used</div>
         </div>
         <div class="d-flex align-items-center gap-2">
-          <input class="form-control form-control-sm" style="width: 72px;" type="number" id="font-size" name="font_size" value="14" min="12" max="20" step="1" autocomplete="off">
+          <input class="form-control form-control-sm" style="width: 4.5rem;" type="number" id="font-size" name="font_size" value="{{ user.font_size }}" min="{{ user.MIN_FONT_SIZE }}" max="{{ user.MAX_FONT_SIZE }}" step="1" required autocomplete="off">
           <span class="text-body-secondary">px</span>
         </div>
       </div>
+      </form>
     </div>
   </main>
 </div>
 {% endblock %}
 
-{% block search_scripts %}{% endblock %}
+{% block search_scripts %}<script src="{% static 'accounts/js/settings.js' %}"></script>{% endblock %}
