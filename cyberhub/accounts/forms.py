@@ -43,6 +43,14 @@ class ProfileForm(forms.ModelForm):
         return username
 
 
+class AppearanceForm(forms.ModelForm):
+    """Save appearance choices. The model's rules reject anything out of range."""
+
+    class Meta:
+        model = User
+        fields = ("color_mode", "font_size")
+
+
 class ProfilePasswordForm(SetPasswordForm):
     """Django's set-password form with our wording for a mismatch.
 

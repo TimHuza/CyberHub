@@ -4,7 +4,7 @@ from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from .forms import ProfileForm, ProfilePasswordForm, SignUpForm
+from .forms import AppearanceForm, ProfileForm, ProfilePasswordForm, SignUpForm
 
 
 def signup(request):
@@ -26,7 +26,14 @@ def signup(request):
 
 @login_required
 def settings_page(request):
-    """Show the Settings page. Its controls are visual only until themes are built."""
+    """Show the Settings page and save the chosen color mode and font size."""
+    if request.method == "POST":
+        form = AppearanceForm(request.POST, instance=request.user)
+        # The browser blocks invalid values, so one reaching us is a crafted request: ignore it.
+        if form.is_valid():
+            form.save()
+        return redirect("accounts:settings")
+
     return render(request, "accounts/settings.html")
 
 
