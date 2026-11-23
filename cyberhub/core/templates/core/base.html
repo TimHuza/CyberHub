@@ -34,8 +34,8 @@
            href="{% url 'core:home' %}">
           <i class="fa-solid fa-house"></i> Dashboard
         </a>
+        <a class="ch-nav-link {% if request.resolver_match.app_name == 'notes' %}active{% endif %}" href="{% url 'notes:list' %}"><i class="fa-solid fa-note-sticky"></i> Notes</a>
         {# Disabled until each component exists. #}
-        <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-note-sticky"></i> Notes</a>
         <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-clipboard-question"></i> Quizzes</a>
         <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-terminal"></i> Commands</a>
         <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-robot"></i> AI Mentor</a>

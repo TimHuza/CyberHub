@@ -2,3 +2,6 @@ Django>=5.2,<5.3
 python-dotenv>=1.2,<2
 python-dotenv
 django-environ
+markdown-it-py
+Pygments
+nh3
