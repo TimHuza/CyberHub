@@ -1,11 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import RestrictedError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from core.markdown import render_markdown
 
+from . import history
 from .forms import FolderForm, NoteForm
 from .models import Folder, Note
 
@@ -35,15 +38,37 @@ def _redirect_to_folder(folder):
 def folder_list(request):
     """Show the user's top-level folders."""
     folders = Folder.objects.filter(user=request.user, parent=None)
-    return render(request, "notes/folder_list.html", {"folders": folders})
+    context = {"folders": folders, "history": history.record_visit(request)}
+    return render(request, "notes/folder_list.html", context)
 
 
 @login_required
 def folder_detail(request, pk):
     """Show one folder with its subfolders and notes."""
     folder = _get_user_folder(request.user, pk)
-    context = {"folder": folder, "folders": folder.children.all(), "notes": folder.notes.all(), "breadcrumbs": _breadcrumbs(folder)}
+    context = {"folder": folder, "folders": folder.children.all(), "notes": folder.notes.all(), "breadcrumbs": _breadcrumbs(folder), "history": history.record_visit(request, folder.pk)}
     return render(request, "notes/folder_list.html", context)
+
+
+def _redirect_to_history_entry(folder_id):
+    """Go to a history entry, where None means the main Notes page."""
+    if folder_id is None:
+        return redirect("notes:list")
+    return redirect("notes:folder_detail", pk=folder_id)
+
+
+@login_required
+@require_POST
+def history_back(request):
+    """Go to the previous page in the Notes history."""
+    return _redirect_to_history_entry(history.move(request, -1))
+
+
+@login_required
+@require_POST
+def history_forward(request):
+    """Go to the next page in the Notes history."""
+    return _redirect_to_history_entry(history.move(request, 1))
 
 
 @login_required
@@ -119,7 +144,44 @@ def note_create(request, folder_id):
     else:
         form = NoteForm(folder=folder)
 
-    return render(request, "notes/note_form.html", {"form": form, "folder": folder})
+    context = {"form": form, "folder": folder, "heading": "New note", "button": "Create", "cancel_url": reverse("notes:folder_detail", args=[folder.pk])}
+    return render(request, "notes/note_form.html", context)
+
+
+@login_required
+def note_edit(request, pk):
+    """Change a note's title or content. It stays in the same folder."""
+    note = get_object_or_404(Note, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        form = NoteForm(request.POST, instance=note, folder=note.folder)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Note saved.")
+            return redirect("notes:note_detail", pk=note.pk)
+    else:
+        form = NoteForm(instance=note, folder=note.folder)
+
+    context = {"form": form, "folder": note.folder, "heading": "Edit note", "button": "Save", "cancel_url": reverse("notes:note_detail", args=[note.pk])}
+    return render(request, "notes/note_form.html", context)
+
+
+@login_required
+@require_POST
+def note_delete(request, pk):
+    """Delete one of the user's notes and return to its folder."""
+    note = get_object_or_404(Note, pk=pk, user=request.user)
+    folder = note.folder
+    note.delete()
+    messages.success(request, "Note deleted.")
+    return _redirect_to_folder(folder)
+
+
+@login_required
+@require_POST
+def note_preview(request):
+    """Return sanitized HTML for the Preview tab. Nothing is saved."""
+    return HttpResponse(render_markdown(request.POST.get("content", "")))
 
 
 @login_required

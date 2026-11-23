@@ -279,3 +279,4 @@ a.ch-result:focus { border-color: var(--ch-accent); background: var(--ch-surface
 .ch-markdown table { display: block; max-width: 100%; margin-bottom: 1rem; overflow-x: auto; border-collapse: collapse; }
 .ch-markdown th, .ch-markdown td { padding: 0.4rem 0.75rem; border: 1px solid var(--ch-border); }
 .ch-markdown th { background: var(--ch-surface-2); }
+.ch-note-preview { min-height: 24rem; }

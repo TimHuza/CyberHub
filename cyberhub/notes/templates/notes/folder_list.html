@@ -4,6 +4,18 @@
 
 {% block content %}
 {# Used for both the top level (no folder) and inside a folder. #}
+{# Back/Forward are POST forms because they change the history saved in the session. #}
+<div class="d-flex gap-1 mb-2">
+  <form method="post" action="{% url 'notes:history_back' %}" class="m-0">
+    {% csrf_token %}
+    <button class="btn btn-outline-secondary btn-sm" type="submit" aria-label="Back" title="Back"{% if not history.can_go_back %} disabled{% endif %}><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+  </form>
+  <form method="post" action="{% url 'notes:history_forward' %}" class="m-0">
+    {% csrf_token %}
+    <button class="btn btn-outline-secondary btn-sm" type="submit" aria-label="Forward" title="Forward"{% if not history.can_go_forward %} disabled{% endif %}><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+  </form>
+</div>
+
 <nav aria-label="Breadcrumb">
   <ol class="breadcrumb">
     {% if folder %}
