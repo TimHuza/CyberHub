@@ -19,7 +19,7 @@ class FolderForm(forms.ModelForm):
     def clean_name(self):
         """Django skips the model's unique rules here because user and parent aren't form fields."""
         name = self.cleaned_data["name"]
-        siblings = Folder.objects.filter(user=self.user, parent=self.parent, name__iexact=name)
+        siblings = Folder.objects.filter(user=self.user, parent=self.parent, name=name)
         if siblings.exclude(pk=self.instance.pk).exists():
             raise ValidationError("A folder with this name already exists here.")
         return name

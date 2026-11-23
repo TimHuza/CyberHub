@@ -68,10 +68,16 @@ class FolderCreateTests(FolderTestCase):
 
     def test_duplicate_top_level_name_shows_error(self):
         Folder.objects.create(user=self.user, name="Networking")
-        response = self.client.post(reverse("notes:folder_create"), {"name": "networking"})
+        response = self.client.post(reverse("notes:folder_create"), {"name": "Networking"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "already exists here")
         self.assertEqual(Folder.objects.filter(user=self.user).count(), 1)
+
+    def test_different_capitalization_is_allowed(self):
+        Folder.objects.create(user=self.user, name="test")
+        response = self.client.post(reverse("notes:folder_create"), {"name": "TeSt"})
+        self.assertRedirects(response, reverse("notes:list"))
+        self.assertEqual(Folder.objects.filter(user=self.user, name__iexact="test").count(), 2)
 
     def test_same_name_allowed_in_different_parents(self):
         first = Folder.objects.create(user=self.user, name="Networking")
