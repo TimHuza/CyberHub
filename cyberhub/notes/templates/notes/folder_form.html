@@ -1,0 +1,24 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ heading }} · CyberHub{% endblock %}
+
+{% block content %}
+<div class="mx-auto" style="max-width: 460px;">
+  <h1 class="h3 mb-3">{{ heading }}</h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold" for="{{ form.name.id_for_label }}">Name</label>
+      <input class="form-control {% if form.name.errors %}is-invalid{% endif %}" type="text" name="{{ form.name.html_name }}" id="{{ form.name.id_for_label }}" value="{{ form.name.value|default:'' }}" maxlength="100" autofocus>
+      {% for error in form.name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <a class="btn btn-outline-secondary btn-sm" href="{% if cancel_folder %}{% url 'notes:folder_detail' cancel_folder.pk %}{% else %}{% url 'notes:list' %}{% endif %}">Cancel</a>
+      <button class="btn btn-accent btn-sm" type="submit">{{ button }}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

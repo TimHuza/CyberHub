@@ -265,3 +265,18 @@ a.ch-result:focus { border-color: var(--ch-accent); background: var(--ch-surface
 .ch-result-desc { font-size: 0.85rem; color: var(--bs-secondary-color); }
 .ch-result-empty { padding: 0.5rem; color: var(--bs-secondary-color); }
 .ch-tile-sm { width: 2.5rem; height: 2.5rem; flex-shrink: 0; font-size: 1.05rem; }
+
+/* ---- Rendered Markdown ---- */
+.ch-markdown { overflow-wrap: anywhere; }
+.ch-markdown > :last-child { margin-bottom: 0; }
+.ch-markdown h1, .ch-markdown h2 { padding-bottom: 0.3rem; border-bottom: 1px solid var(--ch-border); }
+.ch-markdown h1, .ch-markdown h2, .ch-markdown h3, .ch-markdown h4, .ch-markdown h5, .ch-markdown h6 { margin-top: 1.25rem; font-weight: 600; }
+.ch-markdown > :first-child { margin-top: 0; }
+.ch-markdown blockquote { padding-left: 1rem; border-left: 0.25rem solid var(--ch-border-strong); color: var(--bs-secondary-color); }
+.ch-markdown code { padding: 0.1rem 0.3rem; border-radius: 0.25rem; background: var(--ch-surface-2); color: inherit; }
+.ch-markdown pre { padding: 0.85rem 1rem; overflow-x: auto; border-radius: 0.4rem; background: var(--ch-surface-2); overflow-wrap: normal; }
+.ch-markdown pre code { padding: 0; background: none; }
+.ch-markdown table { display: block; max-width: 100%; margin-bottom: 1rem; overflow-x: auto; border-collapse: collapse; }
+.ch-markdown th, .ch-markdown td { padding: 0.4rem 0.75rem; border: 1px solid var(--ch-border); }
+.ch-markdown th { background: var(--ch-surface-2); }
+.ch-note-preview { min-height: 24rem; }

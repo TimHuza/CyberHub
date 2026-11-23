@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ note.title }} · CyberHub{% endblock %}
+
+{% block content %}
+{# A plain link is enough here: a note always has exactly one folder and nothing is changed. #}
+<div class="d-flex gap-1 mb-2">
+  <a class="btn btn-outline-secondary btn-sm" href="{% url 'notes:folder_detail' note.folder_id %}" aria-label="Back to folder" title="Back to {{ note.folder.name }}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></a>
+</div>
+
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'notes:list' %}">Notes</a></li>
+    {% for crumb in breadcrumbs %}
+      <li class="breadcrumb-item"><a href="{% url 'notes:folder_detail' crumb.pk %}">{{ crumb.name }}</a></li>
+    {% endfor %}
+    <li class="breadcrumb-item active" aria-current="page">{{ note.title }}</li>
+  </ol>
+</nav>
+
+{% for message in messages %}
+  <div class="alert {% if message.level_tag == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2" role="status">{{ message }}</div>
+{% endfor %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-1 text-break">{{ note.title }}</h1>
+    <p class="text-body-secondary small mb-0">{{ note.created_at|date:"j M Y" }}</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#delete-note-modal">Delete</button>
+    <a class="btn btn-accent btn-sm" href="{% url 'notes:note_edit' note.pk %}">Edit</a>
+  </div>
+</div>
+
+{# Deleting can't be undone, so it asks first. The real delete is a POST form with CSRF. #}
+<div class="modal fade" id="delete-note-modal" tabindex="-1" aria-labelledby="delete-note-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="delete-note-label">Delete note?</h2>
+        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-break">"{{ note.title }}" will be permanently deleted. This can't be undone.</div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="{% url 'notes:note_delete' note.pk %}" class="m-0">
+          {% csrf_token %}
+          <button class="btn btn-danger btn-sm" type="submit">Delete note</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# rendered_content is already sanitized by core.markdown, so it must never be built any other way. #}
+<div class="ch-markdown border rounded p-3">{% if note.content.strip %}{{ rendered_content }}{% else %}<p class="text-body-secondary">This note is empty.</p>{% endif %}</div>
+{% endblock %}

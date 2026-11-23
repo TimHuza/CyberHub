@@ -1,0 +1,73 @@
+{% extends "core/base.html" %}
+
+{% block title %}{% if folder %}{{ folder.name }}{% else %}Notes{% endif %} · CyberHub{% endblock %}
+
+{% block content %}
+{# Used for both the top level (no folder) and inside a folder. #}
+{# Back/Forward are POST forms because they change the history saved in the session. #}
+<div class="d-flex gap-1 mb-2">
+  <form method="post" action="{% url 'notes:history_back' %}" class="m-0">
+    {% csrf_token %}
+    <button class="btn btn-outline-secondary btn-sm" type="submit" aria-label="Back" title="Back"{% if not history.can_go_back %} disabled{% endif %}><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+  </form>
+  <form method="post" action="{% url 'notes:history_forward' %}" class="m-0">
+    {% csrf_token %}
+    <button class="btn btn-outline-secondary btn-sm" type="submit" aria-label="Forward" title="Forward"{% if not history.can_go_forward %} disabled{% endif %}><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+  </form>
+</div>
+
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    {% if folder %}
+      <li class="breadcrumb-item"><a href="{% url 'notes:list' %}">Notes</a></li>
+      {% for crumb in breadcrumbs %}
+        {% if forloop.last %}
+          <li class="breadcrumb-item active" aria-current="page">{{ crumb.name }}</li>
+        {% else %}
+          <li class="breadcrumb-item"><a href="{% url 'notes:folder_detail' crumb.pk %}">{{ crumb.name }}</a></li>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <li class="breadcrumb-item active" aria-current="page">Notes</li>
+    {% endif %}
+  </ol>
+</nav>
+
+{% for message in messages %}
+  <div class="alert {% if message.level_tag == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2" role="status">{{ message }}</div>
+{% endfor %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0 text-break">{% if folder %}{{ folder.name }}{% else %}Notes{% endif %}</h1>
+  <div class="d-flex gap-2">
+    {% if folder %}
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'notes:folder_rename' folder.pk %}">Rename</a>
+      {# Delete is a POST form with CSRF, so a link on another site can't delete your folders. #}
+      <form method="post" action="{% url 'notes:folder_delete' folder.pk %}" class="m-0">
+        {% csrf_token %}
+        <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+      </form>
+      <a class="btn btn-accent btn-sm" href="{% url 'notes:subfolder_create' folder.pk %}">New subfolder</a>
+      <a class="btn btn-accent btn-sm" href="{% url 'notes:note_create' folder.pk %}">New note</a>
+    {% else %}
+      <a class="btn btn-accent btn-sm" href="{% url 'notes:folder_create' %}">New folder</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if folders or notes %}
+  <div class="list-group">
+    {% for item in folders %}
+      <a class="list-group-item list-group-item-action text-break" href="{% url 'notes:folder_detail' item.pk %}"><i class="fa-solid fa-folder me-2"></i>{{ item.name }}</a>
+    {% endfor %}
+    {% for item in notes %}
+      <a class="list-group-item list-group-item-action text-break" href="{% url 'notes:note_detail' item.pk %}">
+        <div><i class="fa-solid fa-file-lines me-2"></i>{{ item.title }}</div>
+        <small class="text-body-secondary">{{ item.created_at|date:"j M Y" }}</small>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-body-secondary">{% if folder %}This folder is empty.{% else %}No folders yet. Create your first one.{% endif %}</p>
+{% endif %}
+{% endblock %}

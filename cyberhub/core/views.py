@@ -6,7 +6,7 @@ from django.shortcuts import render
 # "icon" is a Font Awesome icon name; "tile" is a CSS class for the coloured square.
 COMPONENTS = [
     {"code": "NTT", "name": "Note Taker", "description": "Markdown notes organised in folders.",
-     "icon": "fa-note-sticky", "tile": "ch-tile-cyan", "url_name": None},
+     "icon": "fa-note-sticky", "tile": "ch-tile-cyan", "url_name": "notes:list"},
     {"code": "QEF", "name": "Quiz Exam Forge", "description": "Quizzes generated from your notes and material.",
      "icon": "fa-clipboard-question", "tile": "ch-tile-red", "url_name": None},
     {"code": "CLV", "name": "Command Library Vault", "description": "Searchable commands in tabs and categories.",

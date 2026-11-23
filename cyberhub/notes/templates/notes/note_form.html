@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ heading }} · CyberHub{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-1">{{ heading }}</h1>
+<p class="text-body-secondary text-break">In {{ folder.name }}</p>
+
+<form id="note-form" method="post" data-preview-url="{% url 'notes:note_preview' %}" novalidate>
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold" for="{{ form.title.id_for_label }}">Title</label>
+    <input class="form-control {% if form.title.errors %}is-invalid{% endif %}" type="text" name="{{ form.title.html_name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" maxlength="200" autofocus>
+    {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+
+  <ul class="nav nav-tabs mb-2" role="tablist">
+    <li class="nav-item" role="presentation"><button class="nav-link active" id="code-tab" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#code-pane" aria-controls="code-pane" aria-selected="true">Code</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="preview-tab" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#preview-pane" aria-controls="preview-pane" aria-selected="false">Preview</button></li>
+  </ul>
+
+  <div class="tab-content mb-3">
+    <div class="tab-pane show active" id="code-pane" role="tabpanel" aria-labelledby="code-tab" tabindex="0">
+      <label class="visually-hidden" for="{{ form.content.id_for_label }}">Content (Markdown)</label>
+      {# The line break after the tag matters: browsers drop the first one, which protects a note's own first line. #}
+      <textarea class="form-control font-monospace" name="{{ form.content.html_name }}" id="{{ form.content.id_for_label }}" rows="16" placeholder="Write in Markdown">
+{{ form.content.value|default:'' }}</textarea>
+      {% for error in form.content.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="tab-pane" id="preview-pane" role="tabpanel" aria-labelledby="preview-tab" tabindex="0">
+      <div id="note-preview" class="ch-markdown ch-note-preview border rounded p-3" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2">
+    <a class="btn btn-outline-secondary btn-sm" href="{{ cancel_url }}">Cancel</a>
+    <button class="btn btn-accent btn-sm" type="submit">{{ button }}</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block search_scripts %}
+{{ block.super }}
+<script src="{% static 'notes/js/note_editor.js' %}"></script>
+{% endblock %}
