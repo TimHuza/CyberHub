@@ -34,6 +34,9 @@ class Note(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["folder", "title"], name="unique_note_title_in_folder"),
+        ]
 
     def __str__(self) -> str:
         return self.title

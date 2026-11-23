@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Folder
+from .models import Folder, Note
 
 
 class FolderForm(forms.ModelForm):
@@ -23,3 +23,26 @@ class FolderForm(forms.ModelForm):
         if siblings.exclude(pk=self.instance.pk).exists():
             raise ValidationError("A folder with this name already exists here.")
         return name
+
+
+class NoteForm(forms.ModelForm):
+    """Create a note. Owner and folder come from the view, never the browser."""
+
+    # strip=False keeps leading spaces, because indentation has meaning in Markdown.
+    content = forms.CharField(required=False, strip=False, widget=forms.Textarea)
+
+    class Meta:
+        model = Note
+        fields = ("title", "content")
+
+    def __init__(self, *args, folder, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.folder = folder
+
+    def clean_title(self):
+        """Django skips the model's unique rule here because folder isn't a form field."""
+        title = self.cleaned_data["title"]
+        siblings = Note.objects.filter(folder=self.folder, title=title)
+        if siblings.exclude(pk=self.instance.pk).exists():
+            raise ValidationError("A note with this title already exists in this folder.")
+        return title

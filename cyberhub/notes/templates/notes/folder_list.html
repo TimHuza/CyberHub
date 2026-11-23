@@ -36,16 +36,23 @@
         <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
       </form>
       <a class="btn btn-accent btn-sm" href="{% url 'notes:subfolder_create' folder.pk %}">New subfolder</a>
+      <a class="btn btn-accent btn-sm" href="{% url 'notes:note_create' folder.pk %}">New note</a>
     {% else %}
       <a class="btn btn-accent btn-sm" href="{% url 'notes:folder_create' %}">New folder</a>
     {% endif %}
   </div>
 </div>
 
-{% if folders %}
+{% if folders or notes %}
   <div class="list-group">
     {% for item in folders %}
       <a class="list-group-item list-group-item-action text-break" href="{% url 'notes:folder_detail' item.pk %}"><i class="fa-solid fa-folder me-2"></i>{{ item.name }}</a>
+    {% endfor %}
+    {% for item in notes %}
+      <a class="list-group-item list-group-item-action text-break" href="{% url 'notes:note_detail' item.pk %}">
+        <div><i class="fa-solid fa-file-lines me-2"></i>{{ item.title }}</div>
+        <small class="text-body-secondary">{{ item.created_at|date:"j M Y" }}</small>
+      </a>
     {% endfor %}
   </div>
 {% else %}

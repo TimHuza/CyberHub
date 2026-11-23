@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+
+{% block title %}New note · CyberHub{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-1">New note</h1>
+<p class="text-body-secondary text-break">In {{ folder.name }}</p>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold" for="{{ form.title.id_for_label }}">Title</label>
+    <input class="form-control {% if form.title.errors %}is-invalid{% endif %}" type="text" name="{{ form.title.html_name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" maxlength="200" autofocus>
+    {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold" for="{{ form.content.id_for_label }}">Content (Markdown)</label>
+    <textarea class="form-control font-monospace" name="{{ form.content.html_name }}" id="{{ form.content.id_for_label }}" rows="16">{{ form.content.value|default:'' }}</textarea>
+    {% for error in form.content.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+  </div>
+
+  <div class="d-flex justify-content-end gap-2">
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'notes:folder_detail' folder.pk %}">Cancel</a>
+    <button class="btn btn-accent btn-sm" type="submit">Create</button>
+  </div>
+</form>
+{% endblock %}

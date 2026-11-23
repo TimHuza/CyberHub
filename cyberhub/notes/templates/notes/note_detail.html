@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ note.title }} · CyberHub{% endblock %}
+
+{% block content %}
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'notes:list' %}">Notes</a></li>
+    {% for crumb in breadcrumbs %}
+      <li class="breadcrumb-item"><a href="{% url 'notes:folder_detail' crumb.pk %}">{{ crumb.name }}</a></li>
+    {% endfor %}
+    <li class="breadcrumb-item active" aria-current="page">{{ note.title }}</li>
+  </ol>
+</nav>
+
+{% for message in messages %}
+  <div class="alert {% if message.level_tag == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2" role="status">{{ message }}</div>
+{% endfor %}
+
+<h1 class="h3 mb-1 text-break">{{ note.title }}</h1>
+<p class="text-body-secondary small">{{ note.created_at|date:"j M Y" }}</p>
+
+{# rendered_content is already sanitized by core.markdown, so it must never be built any other way. #}
+<div class="ch-markdown border rounded p-3">{% if note.content.strip %}{{ rendered_content }}{% else %}<p class="text-body-secondary">This note is empty.</p>{% endif %}</div>
+{% endblock %}

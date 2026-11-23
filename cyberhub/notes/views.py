@@ -4,8 +4,10 @@ from django.db.models import RestrictedError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import FolderForm
-from .models import Folder
+from core.markdown import render_markdown
+
+from .forms import FolderForm, NoteForm
+from .models import Folder, Note
 
 
 def _get_user_folder(user, pk):
@@ -38,9 +40,9 @@ def folder_list(request):
 
 @login_required
 def folder_detail(request, pk):
-    """Show one folder and its subfolders."""
+    """Show one folder with its subfolders and notes."""
     folder = _get_user_folder(request.user, pk)
-    context = {"folder": folder, "folders": folder.children.all(), "breadcrumbs": _breadcrumbs(folder)}
+    context = {"folder": folder, "folders": folder.children.all(), "notes": folder.notes.all(), "breadcrumbs": _breadcrumbs(folder)}
     return render(request, "notes/folder_list.html", context)
 
 
@@ -98,3 +100,31 @@ def folder_delete(request, pk):
 
     messages.success(request, "Folder deleted.")
     return _redirect_to_folder(parent)
+
+
+@login_required
+def note_create(request, folder_id):
+    """Create a note inside one of the user's folders."""
+    folder = _get_user_folder(request.user, folder_id)
+
+    if request.method == "POST":
+        form = NoteForm(request.POST, folder=folder)
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.user = request.user
+            note.folder = folder
+            note.save()
+            messages.success(request, "Note created.")
+            return redirect("notes:note_detail", pk=note.pk)
+    else:
+        form = NoteForm(folder=folder)
+
+    return render(request, "notes/note_form.html", {"form": form, "folder": folder})
+
+
+@login_required
+def note_detail(request, pk):
+    """Show one note. Returns 404 for another user's note."""
+    note = get_object_or_404(Note, pk=pk, user=request.user)
+    context = {"note": note, "rendered_content": render_markdown(note.content), "breadcrumbs": _breadcrumbs(note.folder)}
+    return render(request, "notes/note_detail.html", context)

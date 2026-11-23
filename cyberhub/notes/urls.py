@@ -11,4 +11,6 @@ urlpatterns = [
     path("folders/<int:parent_id>/new/", views.folder_create, name="subfolder_create"),
     path("folders/<int:pk>/rename/", views.folder_rename, name="folder_rename"),
     path("folders/<int:pk>/delete/", views.folder_delete, name="folder_delete"),
+    path("folders/<int:folder_id>/notes/new/", views.note_create, name="note_create"),
+    path("notes/<int:pk>/", views.note_detail, name="note_detail"),
 ]
