@@ -124,7 +124,7 @@ flowchart LR
 | Markdown → HTML | `markdown-it-py` (closest to GitHub) | `Python-Markdown` | 1 |
 | HTML sanitizing | `nh3` (`bleach` is deprecated) | — | 1 |
 | Code highlighting | `Pygments` (server-side) | highlight.js | 1 |
-| Ollama access | `ollama` (official library) | `requests` | 4 |
+| Ollama access | `ollama` (official library) | `requests` | 3 |
 | PDF text | `pypdf` (pure Python, permissive licence) | PyMuPDF (AGPL) | 6 |
 
 ---
@@ -419,18 +419,18 @@ Only via `notes/services.py`: `list_folders(user)`, `get_notes(user, folder_ids,
 
 | Phase | Build | Components | Learn | Done when |
 |---|---|---|---|---|
-| **0. Foundation** | Git repo + GitHub, venv, Django project (`config`), `.env` settings, custom User, base template + Bootstrap, login/logout, test setup | core, accounts | Project structure, settings, auth, Git | Login works; tests pass; first push |
-| **1. NTT** ⭐ | Folders, note CRUD, Markdown render + sanitize, Preview default, Code/Preview tabs, creation dates | NTT | Models, migrations, forms, CRUD, templates, XSS defence, a little JS | Used in class for real |
-| **2. PTM basics** | Event log, `record_event`, NTT reports `note_created`, backfill existing notes, count dashboard | PTM, NTT | Service layer, cross-app integration, aggregation | Note count correct on dashboard |
-| **3. CLV** | Tabs, categories, commands, search, favourites | CLV | Self-referencing relations, search, filtering | Used during labs |
-| **4. AI foundation + AIM chat** | `core.ai.client`, chat with history, command registry, `/exlit` | core, AIM | HTTP to Ollama, prompts, timeouts, mocking | Chat works; Ollama-off handled |
-| **5. QEF** | Generate from notes/folders/topic, structured JSON, validation, take quiz, review mistakes, results → PTM | QEF, NTT, PTM | Structured LLM output, complex relations, multi-step forms | Results appear in PTM |
+| **0. Foundation** ✅ | Git repo + GitHub, venv, Django project (`config`), `.env` settings, custom User, base template + Bootstrap, login/logout, test setup | core, accounts | Project structure, settings, auth, Git | Login works; tests pass; first push |
+| **1. NTT** ✅ | Folders, note CRUD, Markdown render + sanitize, Preview default, Code/Preview tabs, creation dates | NTT | Models, migrations, forms, CRUD, templates, XSS defence, a little JS | Used in class for real |
+| **2. CLV** ✅ | Tabs, categories, commands, search, favourites | CLV | Self-referencing relations, search, filtering | Used during labs |
+| **3. AI foundation + QEF** | `core.ai.client`; generate quizzes from notes/folders/topic; structured JSON + validation; take quiz; review mistakes; results stored in QEF | core, QEF, NTT | HTTP to Ollama, structured LLM output, mocking AI in tests, complex relations | Quiz generated, taken and reviewed; Ollama-off handled |
+| **4. PTM** | Event log, `record_event`; NTT reports `note_created`, QEF reports `quiz_completed`; backfill existing notes and attempts; dashboard (counts, quiz stats, weak topics) | PTM, NTT, QEF | Service layer, cross-app integration, aggregation | Dashboard numbers match real notes/quizzes |
+| **5. AIM chat** | Chat with history, command registry, `/exlit` (reuses `core.ai.client`) | AIM | Prompts, conversation history, timeouts | Chat works; Ollama-off handled |
 | **6. AIM knowledge** | Attach notes/folders, upload PDFs/transcripts, extraction, `/ptm` | AIM, NTT, PTM | Uploads, PDF parsing, context budgeting, prompt-injection defence | AIM answers from notes; `/ptm` works |
-| **7. PTM insights** | Per-topic accuracy, weak topics, progress over time, charts | PTM | Analytical queries, visualization | — |
+| **7. PTM insights** | Progress over time, charts | PTM | Analytical queries, visualization | — |
 | **8. RAG (if needed)** | Chunking, embeddings, similarity search | AIM | Embeddings, vector search | Large folders answered well |
 | **9. Production-ready** | PostgreSQL, Docker, CI, backups, hardening, **disable or protect open sign-up**, note images, export | all | DevOps, containers, CI/CD | `check --deploy` clean |
 
-**MVP = Phases 0 + 1:** a secure, login-protected Markdown notebook. NTT comes first because it needs no AI, teaches core Django, and builds up the notes that QEF and AIM will later need.
+**MVP = Phases 0 + 1:** a secure, login-protected Markdown notebook. NTT comes first because it needs no AI, teaches core Django, and builds up the notes that QEF and AIM will later need. QEF comes before PTM so that PTM's events and statistics are designed around real note and quiz data, not guesses. AIM comes last because it reuses the AI client from QEF and the queries from PTM.
 
 ---
 
