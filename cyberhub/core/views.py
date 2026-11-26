@@ -10,7 +10,7 @@ COMPONENTS = [
     {"code": "QEF", "name": "Quiz Exam Forge", "description": "Quizzes generated from your notes and material.",
      "icon": "fa-clipboard-question", "tile": "ch-tile-red", "url_name": None},
     {"code": "CLV", "name": "Command Library Vault", "description": "Searchable commands in tabs and categories.",
-     "icon": "fa-terminal", "tile": "ch-tile-violet", "url_name": None},
+     "icon": "fa-terminal", "tile": "ch-tile-violet", "url_name": "commands:library"},
     {"code": "AIM", "name": "AI Mentor", "description": "Local AI tutor over your notes and school files.",
      "icon": "fa-robot", "tile": "ch-tile-cyan", "url_name": None},
     {"code": "PTM", "name": "Progress Tracking Manager", "description": "Learning activity and statistics.",

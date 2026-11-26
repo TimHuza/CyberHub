@@ -1,0 +1,148 @@
+/* CLV (Command Library) styles. Colours come from the --ch-* variables in
+   core/css/cyberhub.css, so light and dark mode both work automatically. */
+
+/* Sidebar */
+.clv-back {
+  display: inline-flex;
+  margin-bottom: 1.25rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.4rem;
+  color: var(--ch-text-strong);
+  font-size: 1.35rem;
+  text-decoration: none;
+}
+.clv-back:hover, .clv-back:focus-visible { background: var(--ch-surface-2); color: var(--ch-accent); }
+
+.clv-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.4rem;
+  color: var(--ch-text-strong);
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+.clv-nav-link:hover { background: var(--ch-surface-2); }
+/* The orange dot marks the tab you are looking at. */
+.clv-nav-link.active::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--ch-accent);
+}
+
+/* Page headers */
+.clv-title { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 600; margin-bottom: 0.35rem; }
+.clv-lead { font-size: 1.1rem; color: var(--bs-secondary-color); max-width: 48rem; }
+.clv-section-title { font-size: 1.9rem; font-weight: 600; margin-bottom: 1.25rem; margin-top: 2.5rem; }
+
+/* Landing page search */
+.clv-search { position: relative; max-width: 26rem; }
+.clv-search .form-control { border-radius: 1.5rem; padding-left: 1rem; }
+
+/* Advanced section toggle: chevron points right when closed, down when open. */
+.clv-advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--ch-text-strong);
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+.clv-advanced-toggle:hover { color: var(--ch-accent); }
+.clv-advanced-toggle:focus-visible { outline: 2px solid var(--ch-accent); outline-offset: 2px; }
+.clv-advanced-chevron { font-size: 1.1rem; transition: transform 0.15s; }
+.clv-advanced-toggle[aria-expanded="true"] .clv-advanced-chevron { transform: rotate(90deg); }
+
+/* Command search results: command on the left, where it lives on the right. */
+.clv-command-result { justify-content: space-between; }
+
+/* Landing page cards */
+.clv-card {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ch-border-strong);
+  border-radius: 0.5rem;
+  background: var(--ch-surface);
+}
+.clv-card-text { flex: 1; min-width: 0; }
+/* Show at most two lines of the description; the rest is cut with "…". */
+.clv-card-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--bs-secondary-color);
+  font-size: 0.9rem;
+}
+.clv-enter {
+  flex-shrink: 0;
+  border: 2px solid var(--ch-accent);
+  color: var(--ch-accent);
+  font-weight: 600;
+}
+.clv-enter:hover, .clv-enter:focus-visible { background: var(--ch-accent); color: #fff; }
+
+/* Tab page: categories and command rows */
+.clv-category { margin-bottom: 2.25rem; }
+.clv-category-desc { font-size: 0.875rem; color: var(--bs-secondary-color); margin-bottom: 0.75rem; }
+
+.clv-commands { border-top: 1px solid var(--ch-border-strong); }
+.clv-row { border-bottom: 1px solid var(--ch-border-strong); }
+
+.clv-row-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) 2fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.5rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+button.clv-row-head:hover { background: var(--ch-surface-2); }
+button.clv-row-head:focus-visible { outline: 2px solid var(--ch-accent); outline-offset: -2px; }
+
+.clv-desc-cell { padding-left: 1rem; border-left: 1px solid var(--ch-border-strong); }
+
+/* The command, styled like Markdown inline code. */
+.clv-cmd {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--ch-border-strong);
+  border-radius: 0.3rem;
+  background: var(--ch-surface-2);
+  color: var(--ch-accent);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.clv-chevron { color: var(--bs-secondary-color); transition: transform 0.15s; }
+.clv-row-head[aria-expanded="true"] .clv-chevron { transform: rotate(180deg); }
+
+.clv-details { padding: 0.25rem 0.5rem 1rem; }
+.clv-details-label {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+}
+.clv-syntax { margin: 0; padding: 0.6rem 0.85rem; border-radius: 0.4rem; background: var(--ch-surface-2); white-space: pre-wrap; }
+
+/* Small screens: description goes under the command. */
+@media (max-width: 575.98px) {
+  .clv-row-head { grid-template-columns: 1fr auto; }
+  .clv-desc-cell { grid-column: 1 / -1; grid-row: 2; padding-left: 0; border-left: 0; }
+}
