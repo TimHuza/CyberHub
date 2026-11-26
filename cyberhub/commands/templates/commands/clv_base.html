@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{# Shared CLV layout: its own sidebar (back arrow + tabs), CSS and search script. #}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'commands/css/clv.css' %}?v=2">
+{% endblock %}
+
+{% block sidebar_nav %}
+<nav class="offcanvas-body flex-column p-3" aria-label="Command Library">
+  <a class="clv-back" href="{% url 'core:home' %}" aria-label="Back to the CyberHub dashboard" title="Back to dashboard"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></a>
+  {# No active tab means we are on the landing page, so Home gets the dot. #}
+  <a class="clv-nav-link {% if not active_tab %}active{% endif %}" href="{% url 'commands:library' %}"{% if not active_tab %} aria-current="page"{% endif %}>Home</a>
+  {% for item in tabs %}
+    <a class="clv-nav-link {% if item == active_tab %}active{% endif %}" href="{% url 'commands:tab_detail' item.pk %}"{% if item == active_tab %} aria-current="page"{% endif %}>{{ item.name }}</a>
+  {% endfor %}
+</nav>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ search_data|json_script:"clv-tabs" }}
+{% if command_search_data %}{{ command_search_data|json_script:"clv-commands" }}{% endif %}
+<script src="{% static 'commands/js/clv_search.js' %}?v=2"></script>
+{% endblock %}

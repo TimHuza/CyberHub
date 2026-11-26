@@ -1,0 +1,52 @@
+{% extends "commands/clv_base.html" %}
+
+{% block title %}Command Library · CyberHub{% endblock %}
+
+{% block content %}
+<header class="mb-5">
+  <h1 class="clv-title">Command Library</h1>
+  <p class="clv-lead">Your reference for Python, networking, Linux, PowerShell, Bash and Git commands — what each one does, its options and examples.</p>
+</header>
+
+<section class="mb-5" aria-labelledby="clv-search-label">
+  <h2 class="h4 mb-2" id="clv-search-label">Search categories</h2>
+  {# Suggestions are filled in by clv_search.js. Enter opens the first match. #}
+  <form class="clv-search" role="search" autocomplete="off" data-source="clv-tabs">
+    <input class="form-control" type="search" name="q" placeholder="Search" aria-labelledby="clv-search-label">
+    <div class="ch-search-results" hidden></div>
+  </form>
+</section>
+
+<section aria-labelledby="clv-categories-label">
+  <h2 class="h4 mb-3" id="clv-categories-label">Available Categories</h2>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    {% for item in tabs %}
+      <div class="col">
+        <div class="clv-card">
+          <div class="clv-card-text">
+            <h3 class="h5 mb-1">{{ item.name }}</h3>
+            <p class="clv-card-desc mb-0">{{ item.description }}</p>
+          </div>
+          <a class="btn clv-enter" href="{% url 'commands:tab_detail' item.pk %}" aria-label="Enter {{ item.name }}">Enter</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-body-secondary">The library is empty.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mt-5">
+  {# Collapsed by default; Bootstrap's collapse opens it and sets aria-expanded for the chevron. #}
+  <button class="clv-advanced-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#clv-advanced" aria-expanded="false" aria-controls="clv-advanced"><i class="fa-solid fa-chevron-right clv-advanced-chevron" aria-hidden="true"></i> Advanced</button>
+  <div class="collapse" id="clv-advanced">
+    <div class="pt-3">
+      <h2 class="h4 mb-2" id="clv-command-search-label">Search by command</h2>
+      <form class="clv-search" role="search" autocomplete="off" data-source="clv-commands">
+        <input class="form-control" type="search" name="q" placeholder="Search" aria-labelledby="clv-command-search-label">
+        <div class="ch-search-results" hidden></div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

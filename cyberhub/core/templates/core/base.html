@@ -15,6 +15,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer">
   {# Our CSS loads last so it can override Bootstrap. Bump ?v= whenever it changes, so browsers fetch the new file. #}
   <link rel="stylesheet" href="{% static 'core/css/cyberhub.css' %}?v=6">
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
   {# Sign up and log in replace this whole block, so they show no sidebar or top bar. #}
@@ -29,6 +30,8 @@
         <button type="button" class="btn-close d-lg-none" data-bs-dismiss="offcanvas"
                 data-bs-target="#sidebar" aria-label="Close menu"></button>
       </div>
+      {# Components with their own section (e.g. CLV) replace this block with their own sidebar. #}
+      {% block sidebar_nav %}
       <nav class="offcanvas-body flex-column p-3" aria-label="Main">
         <a class="ch-nav-link {% if request.resolver_match.view_name == 'core:home' %}active{% endif %}"
            href="{% url 'core:home' %}">
@@ -37,10 +40,11 @@
         <a class="ch-nav-link {% if request.resolver_match.app_name == 'notes' %}active{% endif %}" href="{% url 'notes:list' %}"><i class="fa-solid fa-note-sticky"></i> Notes</a>
         {# Disabled until each component exists. #}
         <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-clipboard-question"></i> Quizzes</a>
-        <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-terminal"></i> Commands</a>
+        <a class="ch-nav-link {% if request.resolver_match.app_name == 'commands' %}active{% endif %}" href="{% url 'commands:library' %}"><i class="fa-solid fa-terminal"></i> Commands</a>
         <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-robot"></i> AI Mentor</a>
         <a class="ch-nav-link disabled" aria-disabled="true"><i class="fa-solid fa-chart-line"></i> Progress</a>
       </nav>
+      {% endblock %}
     </aside>
 
     <div class="ch-main">
@@ -99,5 +103,6 @@
   {{ components|json_script:"ch-components" }}
   <script src="{% static 'core/js/search.js' %}"></script>
   {% endblock %}
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,57 @@
+{% extends "commands/clv_base.html" %}
+
+{% block title %}{{ tab.name }} · Command Library · CyberHub{% endblock %}
+
+{% block content %}
+<header class="mb-4">
+  <h1 class="clv-title">{{ tab.name }}</h1>
+  <p class="clv-lead">{{ tab.description }}</p>
+</header>
+
+<h2 class="clv-section-title">Commands</h2>
+
+{% for category in categories %}
+  <section class="clv-category" aria-labelledby="category-{{ category.pk }}">
+    <h3 class="h4 mb-1" id="category-{{ category.pk }}">{{ category.name }}</h3>
+    {% if category.description %}<p class="clv-category-desc">{{ category.description }}</p>{% endif %}
+
+    <div class="clv-commands">
+      {% for command in category.commands.all %}
+        <div class="clv-row">
+          {% if command.has_details %}
+            {# Bootstrap's collapse opens the details below; aria-expanded tells screen readers. #}
+            <button class="clv-row-head" type="button" data-bs-toggle="collapse" data-bs-target="#command-{{ command.pk }}" aria-expanded="false" aria-controls="command-{{ command.pk }}">
+              <span class="clv-cmd-cell"><code class="clv-cmd">{{ command.name }}</code></span>
+              <span class="clv-desc-cell">{{ command.description }}</span>
+              <i class="fa-solid fa-chevron-down clv-chevron" aria-hidden="true"></i>
+            </button>
+            <div class="collapse" id="command-{{ command.pk }}">
+              <div class="clv-details">
+                {% if command.syntax %}
+                  <h4 class="clv-details-label">Syntax</h4>
+                  <pre class="clv-syntax"><code>{{ command.syntax }}</code></pre>
+                {% endif %}
+                {% if command.parameters_html %}
+                  <h4 class="clv-details-label">Parameters</h4>
+                  <div class="ch-markdown">{{ command.parameters_html }}</div>
+                {% endif %}
+                {% if command.examples_html %}
+                  <h4 class="clv-details-label">Examples</h4>
+                  <div class="ch-markdown">{{ command.examples_html }}</div>
+                {% endif %}
+              </div>
+            </div>
+          {% else %}
+            <div class="clv-row-head">
+              <span class="clv-cmd-cell"><code class="clv-cmd">{{ command.name }}</code></span>
+              <span class="clv-desc-cell">{{ command.description }}</span>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% empty %}
+  <p class="text-body-secondary">No commands in this category yet.</p>
+{% endfor %}
+{% endblock %}
